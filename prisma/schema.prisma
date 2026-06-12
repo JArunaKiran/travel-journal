@@ -1,3 +1,11 @@
+enum ActivityType {
+  TRAVEL
+  CHECK_IN
+  CHECK_OUT
+  EXPLORE
+  MEAL
+}
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,15 +16,35 @@ datasource db {
 }
 
 model Trip {
-  id          String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  title       String
+  title String
 
-  country     String?
+  country String?
 
-  startDate   DateTime?
+  startDate DateTime?
 
-  endDate     DateTime?
+  endDate DateTime?
 
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  itineraryItems ItineraryItem[]
+}
+
+model ItineraryItem {
+  id String @id @default(cuid())
+
+  activity ActivityType
+
+  place String
+
+  date DateTime?
+
+  time String?
+
+  notes String?
+
+  tripId String
+
+  trip Trip @relation(fields: [tripId], references: [id])
 }

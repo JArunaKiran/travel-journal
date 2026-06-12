@@ -17,6 +17,15 @@ export async function createTrip(data: {
     data,
   });
 }
+export async function getTripById(
+  id: string
+) {
+  return prisma.trip.findUnique({
+    where: {
+      id,
+    },
+  });
+}
 
 //what this file does
 // this is our first service

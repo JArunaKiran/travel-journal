@@ -20,9 +20,10 @@ export default async function HomePage() {
 
       <div className="mt-6 space-y-3">
         {trips.map((trip) => (
-          <div
+          <Link
             key={trip.id}
-            className="border rounded-lg p-4"
+            href = {`/trips/${trip.id}`}
+            className="block w-full border rounded-lg p-4 bg-white"
           >
             <h2 className="font-semibold">
               {trip.title}
@@ -31,7 +32,7 @@ export default async function HomePage() {
             <p className="text-sm text-gray-500">
               {trip.country}
             </p>
-          </div>
+          </Link>
         ))}
       </div>
     </main>
