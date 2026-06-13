@@ -6,7 +6,7 @@ export default async function HomePage() {
   const trips = await getTrips();
 
   return (
-    <main className="max-w-md mx-auto p-4">
+    <main className="max-w-md mx-auto p-4 bg-white text-black min-h-screen">
       <h1 className="text-3xl font-bold">
         Travel Journal
       </h1>

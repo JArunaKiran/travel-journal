@@ -1,6 +1,8 @@
+import Link from "next/link";
+
 import { getTripById } from "@/services/tripService";
 import { getItineraryItemsByTrip } from "@/services/itineraryService";
-import Link from "next/link";
+import { getTripJournalEntries } from "@/services/journalService";
 
 type Props = {
   params: Promise<{
@@ -15,12 +17,9 @@ export default async function TripDetailsPage({
 
   const trip = await getTripById(id);
 
-  const itineraryItems =
-    await getItineraryItemsByTrip(id);
-
   if (!trip) {
     return (
-      <main className="max-w-md mx-auto p-4">
+      <main className="max-w-md mx-auto p-4 bg-white text-black min-h-screen">
         <h1 className="text-xl font-bold">
           Trip not found
         </h1>
@@ -28,8 +27,14 @@ export default async function TripDetailsPage({
     );
   }
 
+  const itineraryItems =
+    await getItineraryItemsByTrip(id);
+
+  const journalEntries =
+    await getTripJournalEntries(id);
+
   return (
-    <main className="max-w-md mx-auto p-4">
+    <main className="max-w-md mx-auto p-4 bg-white text-black min-h-screen">
       <h1 className="text-3xl font-bold">
         {trip.title}
       </h1>
@@ -40,7 +45,9 @@ export default async function TripDetailsPage({
             Country
           </p>
 
-          <p>{trip.country || "Not specified"}</p>
+          <p>
+            {trip.country || "Not specified"}
+          </p>
         </div>
 
         <div>
@@ -85,6 +92,7 @@ export default async function TripDetailsPage({
       </Link>
 
       <div className="mt-6 space-y-3">
+        {/* Itinerary Section */}
         <div className="rounded-xl border p-4">
           <h2 className="font-semibold mb-3">
             Itinerary
@@ -118,12 +126,49 @@ export default async function TripDetailsPage({
           )}
         </div>
 
+        {/* Journal Section */}
         <div className="rounded-xl border p-4">
-          Journal
+          <h2 className="font-semibold mb-3">
+            Journal
+          </h2>
+          <Link
+            href={`/trips/${trip.id}/journal/new`}
+            className=" block mb-4 rounded-lg bg-black text-white p-3 text-center"
+          >
+            Add Journal Entry
+          </Link>
+
+          {journalEntries.length === 0 ? (
+            <p className="text-sm text-gray-500">
+              No journal entries yet
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {journalEntries.map((entry) => (
+                <div
+                  key={entry.id}
+                  className="border rounded-lg p-3"
+                >
+                  <div className="font-medium">
+                    {entry.title}
+                  </div>
+
+                  <div className="text-sm text-gray-500">
+                    {entry.date
+                      ? entry.date.toLocaleDateString()
+                      : ""}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
+        {/* Expenses Section */}
         <div className="rounded-xl border p-4">
-          Expenses
+          <h2 className="font-semibold">
+            Expenses
+          </h2>
         </div>
       </div>
     </main>

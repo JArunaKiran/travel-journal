@@ -29,6 +29,8 @@ model Trip {
   createdAt DateTime @default(now())
 
   itineraryItems ItineraryItem[]
+
+  journalEntries JournalEntry[] 
 }
 
 model ItineraryItem {
@@ -47,4 +49,26 @@ model ItineraryItem {
   tripId String
 
   trip Trip @relation(fields: [tripId], references: [id])
+
+  journalEntries JournalEntry[]
+
+}
+model JournalEntry {
+  id              String   @id @default(cuid())
+
+  title           String
+
+  date            DateTime?
+
+  content         String
+
+  createdAt       DateTime @default(now())
+
+  tripId          String?
+
+  itineraryItemId String?
+
+  trip            Trip? @relation(fields: [tripId], references: [id])
+
+  itineraryItem   ItineraryItem? @relation(fields: [itineraryItemId], references: [id])
 }
