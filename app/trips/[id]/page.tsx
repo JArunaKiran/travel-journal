@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getTripById } from "@/services/tripService";
 import { getItineraryItemsByTrip } from "@/services/itineraryService";
 import { getTripJournalEntries } from "@/services/journalService";
+import { deleteJournalEntryAction,  deleteItineraryItemAction, deleteTripItineraryAction, deleteTripAction, } from "./actions";
 
 type Props = {
   params: Promise<{
@@ -30,14 +31,52 @@ export default async function TripDetailsPage({
   const itineraryItems =
     await getItineraryItemsByTrip(id);
 
+  const groupedItinerary = itineraryItems.reduce(
+  (groups, item) => {
+    if (!item.date) return groups;
+
+    const dateKey = item.date
+      .toISOString()
+      .split("T")[0];
+
+    if (!groups[dateKey]) {
+      groups[dateKey] = [];
+    }
+
+    groups[dateKey].push(item);
+
+    return groups;
+  },
+  {} as Record<string, typeof itineraryItems>
+);
+
   const journalEntries =
     await getTripJournalEntries(id);
 
   return (
     <main className="max-w-md mx-auto p-4 bg-white text-black min-h-screen">
+      <Link
+      href="/"
+      className="text-sm text-gray-500"
+      >
+      ← Back to Trips
+    </Link>
       <h1 className="text-3xl font-bold">
         {trip.title}
       </h1>
+      <form
+        action={deleteTripAction.bind(
+          null,
+          trip.id
+        )}
+      >
+       <button
+          type="submit"
+          className="text-sm text-red-600"
+       >
+        Delete Trip
+      </button>
+      </form>
 
       <div className="mt-6 rounded-xl border p-4 space-y-3">
         <div>
@@ -98,32 +137,92 @@ export default async function TripDetailsPage({
             Itinerary
           </h2>
 
-          {itineraryItems.length === 0 ? (
+          {itineraryItems.length > 0 && (
+            <form
+              action={deleteTripItineraryAction.bind(
+              null,
+              trip.id
+            )}
+            >
+            <button
+              type="submit"
+              className="text-sm text-red-600"
+            >
+              Delete Entire Itinerary
+            </button>
+            </form>
+          )}
+
+          {Object.keys(groupedItinerary).length === 0 ? (
             <p className="text-sm text-gray-500">
-              No itinerary items yet
+                No itinerary items yet
             </p>
           ) : (
+            <div className="space-y-6">
+            {Object.entries(groupedItinerary)
+              .sort(([a], [b]) => a.localeCompare(b))
+              .map(([dateKey, items]) => {
+             const currentDate = new Date(dateKey);
+
+             const dayNumber =
+              trip.startDate
+              ? Math.floor(
+                (currentDate.getTime() -
+                  trip.startDate.getTime()) /
+                  (1000 * 60 * 60 * 24)
+              ) + 1
+            : "?";
+
+        return (
+          <div key={dateKey}>
+            <h3 className="font-semibold text-lg mb-3">
+              {currentDate.toLocaleDateString()}
+              {" · "}
+              Day {dayNumber}
+            </h3>
+
             <div className="space-y-3">
-              {itineraryItems.map((item) => (
+              {items.map((item) => (
                 <div
                   key={item.id}
-                  className="border rounded-lg p-3"
+                  className="border rounded-lg p-3 bg-white shadow-sm"
                 >
-                  <div className="font-medium">
-                    {item.activity}
+                  <div className="font-semibold">
+                    {item.activity.replaceAll(
+                      "_",
+                      " "
+                    )}
                   </div>
 
-                  <div className="text-sm">
-                    {item.place}
+                  <div className="text-sm mt-2">
+                    📍 {item.place}
                   </div>
 
-                  <div className="text-sm text-gray-500">
-                    {item.time}
+                  <div className="text-sm text-gray-500 mt-1">
+                    🕘 {item.time}
                   </div>
+                  <form
+                    action={deleteItineraryItemAction.bind(
+                    null,
+                    trip.id,
+                    item.id
+                    )}
+                  >
+                  <button
+                    type="submit"
+                    className=" mt-3 text-sm text-red-600"
+                  >
+                    Delete
+                  </button>
+                  </form>
                 </div>
               ))}
             </div>
-          )}
+          </div>
+        );
+      })}
+  </div>
+)}
         </div>
 
         {/* Journal Section */}
@@ -158,6 +257,24 @@ export default async function TripDetailsPage({
                       ? entry.date.toLocaleDateString()
                       : ""}
                   </div>
+                  <div className="text-sm mt-2 text-gray-700">
+                    {entry.content.slice(0, 100)}
+                    {entry.content.length > 100 ? "..." : ""}
+                  </div>
+                  <form
+                    action={deleteJournalEntryAction.bind(
+                      null,
+                      trip.id,
+                      entry.id
+                    )}
+                  >
+                   <button
+                     type="submit"
+                     className=" mt-3 text-sm text-red-600"
+                   >
+                      Delete
+                   </button>
+                  </form>
                 </div>
               ))}
             </div>

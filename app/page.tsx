@@ -29,8 +29,13 @@ export default async function HomePage() {
               {trip.title}
             </h2>
 
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 mt-1">
               {trip.country}
+            </p>
+            <p className="text-xs text-gray-400 mt-2">
+              {trip.startDate ? trip.startDate.toLocaleDateString(): "?"}
+              {" → "}
+              {trip.endDate ? trip.endDate.toLocaleDateString(): "?"}
             </p>
           </Link>
         ))}

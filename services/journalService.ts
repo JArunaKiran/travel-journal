@@ -25,3 +25,12 @@ export async function createTripJournalEntry(
     data,
   });
 }
+export async function deleteJournalEntry(
+  id: string
+) {
+  return prisma.journalEntry.delete({
+    where: {
+      id,
+    },
+  });
+}

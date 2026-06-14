@@ -26,6 +26,27 @@ export async function getTripById(
     },
   });
 }
+export async function deleteTrip(
+  tripId: string
+) {
+  await prisma.itineraryItem.deleteMany({
+    where: {
+      tripId,
+    },
+  });
+
+  await prisma.journalEntry.deleteMany({
+    where: {
+      tripId,
+    },
+  });
+
+  return prisma.trip.delete({
+    where: {
+      id: tripId,
+    },
+  });
+}
 
 //what this file does
 // this is our first service

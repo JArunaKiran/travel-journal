@@ -2,6 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { createItineraryItem } from "@/services/itineraryService";
+import { revalidatePath } from "next/cache";
+import { deleteJournalEntry } from "@/services/journalService";
 
 export async function createItineraryItemAction(
   tripId: string,
@@ -39,4 +41,14 @@ export async function createItineraryItemAction(
   });
 
   redirect(`/trips/${tripId}`);
+}
+export async function deleteJournalEntryAction(
+  tripId: string,
+  journalEntryId: string
+) {
+  await deleteJournalEntry(
+    journalEntryId
+  );
+
+  revalidatePath(`/trips/${tripId}`);
 }

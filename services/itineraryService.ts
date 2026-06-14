@@ -35,3 +35,21 @@ export async function createItineraryItem(data: {
     data,
   });
 }
+export async function deleteItineraryItem(
+  id: string
+) {
+  return prisma.itineraryItem.delete({
+    where: {
+      id,
+    },
+  });
+}
+export async function deleteTripItinerary(
+  tripId: string
+) {
+  return prisma.itineraryItem.deleteMany({
+    where: {
+      tripId,
+    },
+  });
+}

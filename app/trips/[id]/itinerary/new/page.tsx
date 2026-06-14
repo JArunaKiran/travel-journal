@@ -1,4 +1,7 @@
 import { createItineraryItemAction } from "./actions";
+import Link from "next/link";
+import { deleteJournalEntryAction,} from "./actions";
+
 
 type Props = {
   params: Promise<{
@@ -19,6 +22,12 @@ export default async function NewItineraryPage({
 
   return (
     <main className="max-w-md mx-auto p-4">
+      <Link
+  href={`/trips/${id}`}
+  className="text-sm text-gray-500"
+>
+  ← Back
+</Link>
       <h1 className="text-2xl font-bold mb-6">
         Add Activity
       </h1>
@@ -69,6 +78,7 @@ export default async function NewItineraryPage({
           name="date"
           type="date"
           className="w-full border rounded-lg p-3"
+          required
         />
 
         <input
