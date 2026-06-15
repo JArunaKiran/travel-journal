@@ -2,7 +2,8 @@ import Link from "next/link";
 import { getTripById } from "@/services/tripService";
 import { getItineraryItemsByTrip } from "@/services/itineraryService";
 import { getTripJournalEntries, getLatestItineraryJournalEntry, } from "@/services/journalService";
-import { deleteJournalEntryAction,  deleteItineraryItemAction, deleteTripItineraryAction, deleteTripAction, } from "./actions";
+import { deleteJournalEntryAction,  deleteItineraryItemAction, deleteTripItineraryAction, deleteTripAction,createTravelerAction, deleteTravelerAction } from "./actions";
+import {getTravelersByTrip,} from "@/services/travelerService";
 
 type Props = {
   params: Promise<{
@@ -51,6 +52,9 @@ export default async function TripDetailsPage({
 
   const journalEntries =
     await getTripJournalEntries(id);
+
+  const travelers =
+    await getTravelersByTrip(id);
 
   return (
     <main className="max-w-5xl mx-auto px-6 py-8 bg-white text-black min-h-screen">
@@ -317,6 +321,66 @@ export default async function TripDetailsPage({
             </div>
           )}
         </div>
+        
+        <div className="rounded-2xl border p-6 bg-white shadow-sm">
+          <h2 className="font-semibold mb-4">
+            Travelers
+          </h2>
+        <form
+          action={createTravelerAction.bind(
+            null,
+            trip.id
+          )}
+          className="flex gap-2 mb-4"
+        >
+        <input 
+            name = "name"
+            type = "text"
+            placeholder= "Traveler name"
+            className="flex-1 border rounded-lg p-2"
+            required
+        />
+        <button
+          type = "submit"
+          className ="rounded-lg bg-black text-white px-4"
+        >
+          Add Traveler
+        </button>
+        </form>
+        {travelers.length == 0 ? (
+          <p className="text-sm text-gray-500">
+            No travelers yet
+          </p>
+        ) : (
+          <div className="space-y-2">
+            {travelers.map((traveler) => (
+              <div
+                key = {traveler.id}
+                className="flex items-center justify-between border rounded-lg p-3"
+              >
+            <span>
+              {traveler.name}
+            </span>
+
+            <form
+              action = {deleteTravelerAction.bind(
+                null,
+                trip.id,
+                traveler.id
+              )}
+            >
+              <button
+                type = "submit"
+                className="text-sm text-red-600"
+              >
+                Delete traveler
+              </button>
+            </form>
+          </div>
+            ))}
+      </div>
+        )}
+    </div>
 
         {/* Expenses Section */}
         <div className="rounded-2xl border p-6 bg-white shadow-sm">

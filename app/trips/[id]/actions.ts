@@ -5,6 +5,7 @@ import { deleteJournalEntry } from "@/services/journalService";
 import { deleteItineraryItem,deleteTripItinerary,} from "@/services/itineraryService";
 import { deleteTrip, } from "@/services/tripService";
 import { redirect } from "next/navigation";
+import {createTraveler, deleteTraveler,} from "@/services/travelerService";
 
 
 export async function deleteJournalEntryAction(
@@ -41,3 +42,32 @@ export async function deleteTripAction(
 
   redirect("/");
 }
+export async function createTravelerAction(
+  tripId: string,
+  formData: FormData
+) {
+  const name =
+    formData.get("name") as string;
+
+  await createTraveler({
+    tripId,
+    name,
+  });
+
+  revalidatePath(
+    `/trips/${tripId}`
+  );
+}
+
+export async function deleteTravelerAction(
+  tripId: string,
+  travelerId: string
+) {
+  await deleteTraveler(
+    travelerId
+  );
+
+  revalidatePath(
+    `/trips/${tripId}`
+  );
+} 

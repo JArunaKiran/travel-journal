@@ -31,6 +31,8 @@ model Trip {
   itineraryItems ItineraryItem[]
 
   journalEntries JournalEntry[] 
+
+  travelers Traveler[]
 }
 
 model ItineraryItem {
@@ -71,4 +73,13 @@ model JournalEntry {
   trip            Trip? @relation(fields: [tripId], references: [id])
 
   itineraryItem   ItineraryItem? @relation(fields: [itineraryItemId], references: [id])
+}
+model Traveler {
+  id String @id @default(cuid())
+
+  name String
+
+  tripId String
+
+  trip Trip @relation(fields: [tripId], references: [id])
 }
