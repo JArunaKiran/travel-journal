@@ -34,3 +34,27 @@ export async function deleteJournalEntry(
     },
   });
 }
+export async function createItineraryJournalEntry(
+  data: {
+    itineraryItemId: string;
+    title: string;
+    content: string;
+    date?: Date;
+  }
+) {
+  return prisma.journalEntry.create({
+    data,
+  });
+}
+export async function getItineraryJournalEntries(
+  itineraryItemId: string
+) {
+  return prisma.journalEntry.findMany({
+    where: {
+      itineraryItemId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}

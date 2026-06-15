@@ -1,5 +1,4 @@
 import Link from "next/link";
-
 import { getTripById } from "@/services/tripService";
 import { getItineraryItemsByTrip } from "@/services/itineraryService";
 import { getTripJournalEntries } from "@/services/journalService";
@@ -20,7 +19,7 @@ export default async function TripDetailsPage({
 
   if (!trip) {
     return (
-      <main className="max-w-md mx-auto p-4 bg-white text-black min-h-screen">
+      <main className="max-w-5xl mx-auto px-6 py-8 bg-white text-black min-h-screen">
         <h1 className="text-xl font-bold">
           Trip not found
         </h1>
@@ -54,14 +53,14 @@ export default async function TripDetailsPage({
     await getTripJournalEntries(id);
 
   return (
-    <main className="max-w-md mx-auto p-4 bg-white text-black min-h-screen">
+    <main className="max-w-5xl mx-auto px-6 py-8 bg-white text-black min-h-screen">
       <Link
       href="/"
       className="text-sm text-gray-500"
       >
       ← Back to Trips
     </Link>
-      <h1 className="text-3xl font-bold">
+      <h1 className="text-4xl font-bold">
         {trip.title}
       </h1>
       <form
@@ -78,61 +77,47 @@ export default async function TripDetailsPage({
       </button>
       </form>
 
-      <div className="mt-6 rounded-xl border p-4 space-y-3">
-        <div>
-          <p className="text-sm text-gray-500">
-            Country
-          </p>
+      <div className="mt-6 rounded-2xl border p-6 bg-white shadow-sm">
+      <div className="grid gap-8 md:grid-cols-3">
+          <div>
+            <p  className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              Country
+            </p>
+            <p className="mt-3 text-xl font-medium">
+              {trip.country || "Not specified"}
+            </p>
+          </div>
 
-          <p>
-            {trip.country || "Not specified"}
-          </p>
-        </div>
-
-        <div>
-          <p className="text-sm text-gray-500">
+          <div>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
             Start Date
           </p>
-
-          <p>
-            {trip.startDate
-              ? trip.startDate.toLocaleDateString()
-              : "Not specified"}
+          <p className="mt-3 text-xl font-medium">
+              {trip.startDate ? trip.startDate.toLocaleDateString("en-GB", {day: "2-digit", month: "short", year: "numeric"}): "Not specified"}
           </p>
-        </div>
+          </div>
 
-        <div>
-          <p className="text-sm text-gray-500">
+          <div>
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
             End Date
           </p>
-
-          <p>
-            {trip.endDate
-              ? trip.endDate.toLocaleDateString()
-              : "Not specified"}
+          <p className="mt-3 text-xl font-medium">
+            {trip.endDate ? trip.endDate.toLocaleDateString("en-GB", {day: "2-digit", month: "short", year: "numeric"}) : "Not specified"}
           </p>
-        </div>
+          </div>
       </div>
+    </div>
 
       <Link
         href={`/trips/${trip.id}/itinerary/new`}
-        className="
-          block
-          w-full
-          rounded-xl
-          bg-black
-          text-white
-          p-3
-          text-center
-          mt-6
-        "
+        className=" block w-full rounded-2xl bg-black text-white py-4 text-center mt-6 font-medium"
       >
         Add Activity
       </Link>
 
-      <div className="mt-6 space-y-3">
+      <div className="mt-8 space-y-6">
         {/* Itinerary Section */}
-        <div className="rounded-xl border p-4">
+        <div className="rounded-2xl border p-6 bg-white shadow-sm">
           <h2 className="font-semibold mb-3">
             Itinerary
           </h2>
@@ -176,7 +161,7 @@ export default async function TripDetailsPage({
         return (
           <div key={dateKey}>
             <h3 className="font-semibold text-lg mb-3">
-              {currentDate.toLocaleDateString()}
+              {currentDate.toLocaleDateString("en-GB", {day: "2-digit", month: "short", year: "numeric"})}
               {" · "}
               Day {dayNumber}
             </h3>
@@ -185,9 +170,9 @@ export default async function TripDetailsPage({
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className="border rounded-lg p-3 bg-white shadow-sm"
+                  className="border rounded-xl p-5 bg-white shadow-sm hover:shadow-md transition"
                 >
-                  <div className="font-semibold">
+                  <div className="text-lg font-semibold">
                     {item.activity.replaceAll(
                       "_",
                       " "
@@ -201,6 +186,18 @@ export default async function TripDetailsPage({
                   <div className="text-sm text-gray-500 mt-1">
                     🕘 {item.time}
                   </div>
+
+                  <div className= "text-sm mt-2">
+                    🗒️ {item.notes}
+                  </div>
+                  <div className=" mt-4 flex items-center gap-4">
+                    <Link
+                        href = {`/trips/${trip.id}/itinerary/${item.id}/journal/new`}
+                        className="text-sm font-medium text-blue-600"
+                    >
+                      Add Journal
+                    </Link>
+                      
                   <form
                     action={deleteItineraryItemAction.bind(
                     null,
@@ -210,11 +207,12 @@ export default async function TripDetailsPage({
                   >
                   <button
                     type="submit"
-                    className=" mt-3 text-sm text-red-600"
+                    className=" font-medium text-sm text-red-600"
                   >
                     Delete
                   </button>
                   </form>
+                  </div>
                 </div>
               ))}
             </div>
@@ -226,7 +224,7 @@ export default async function TripDetailsPage({
         </div>
 
         {/* Journal Section */}
-        <div className="rounded-xl border p-4">
+        <div className="rounded-2xl border p-6 bg-white shadow-sm">
           <h2 className="font-semibold mb-3">
             Journal
           </h2>
@@ -246,15 +244,15 @@ export default async function TripDetailsPage({
               {journalEntries.map((entry) => (
                 <div
                   key={entry.id}
-                  className="border rounded-lg p-3"
+                  className="border rounded-xl p-4 bg-white shadow-sm"
                 >
-                  <div className="font-medium">
+                  <div className="text-lg font-semibold">
                     {entry.title}
                   </div>
 
-                  <div className="text-sm text-gray-500">
+                  <div className="mt-1 text-sm text-gray-500">
                     {entry.date
-                      ? entry.date.toLocaleDateString()
+                      ? entry.date.toLocaleDateString("en-GB", {day: "2-digit", month: "short", year: "numeric"})
                       : ""}
                   </div>
                   <div className="text-sm mt-2 text-gray-700">
@@ -282,7 +280,7 @@ export default async function TripDetailsPage({
         </div>
 
         {/* Expenses Section */}
-        <div className="rounded-xl border p-4">
+        <div className="rounded-2xl border p-6 bg-white shadow-sm">
           <h2 className="font-semibold">
             Expenses
           </h2>
