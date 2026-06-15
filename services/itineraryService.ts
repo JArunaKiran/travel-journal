@@ -7,6 +7,16 @@ export async function getItineraryItemsByTrip(
     where: {
       tripId,
     },
+
+    include: {
+      journalEntries: {
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 1,
+      },
+    },
+
     orderBy: [
       {
         date: "asc",
@@ -50,6 +60,15 @@ export async function deleteTripItinerary(
   return prisma.itineraryItem.deleteMany({
     where: {
       tripId,
+    },
+  });
+}
+export async function getItineraryItemById(
+  id: string
+) {
+  return prisma.itineraryItem.findUnique({
+    where: {
+      id,
     },
   });
 }

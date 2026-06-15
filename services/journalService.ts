@@ -58,3 +58,39 @@ export async function getItineraryJournalEntries(
     },
   });
 }
+export async function getLatestItineraryJournalEntry(
+  itineraryItemId: string
+) {
+  return prisma.journalEntry.findFirst({
+    where: {
+      itineraryItemId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
+export async function getJournalEntryById(
+  id: string
+) {
+  return prisma.journalEntry.findUnique({
+    where: {
+      id,
+    },
+  });
+}
+export async function updateJournalEntry(
+  id: string,
+  data: {
+    title: string;
+    content: string;
+    date?: Date;
+  }
+) {
+  return prisma.journalEntry.update({
+    where: {
+      id,
+    },
+    data,
+  });
+}

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getTripById } from "@/services/tripService";
 import { getItineraryItemsByTrip } from "@/services/itineraryService";
-import { getTripJournalEntries } from "@/services/journalService";
+import { getTripJournalEntries, getLatestItineraryJournalEntry, } from "@/services/journalService";
 import { deleteJournalEntryAction,  deleteItineraryItemAction, deleteTripItineraryAction, deleteTripAction, } from "./actions";
 
 type Props = {
@@ -190,7 +190,32 @@ export default async function TripDetailsPage({
                   <div className= "text-sm mt-2">
                     🗒️ {item.notes}
                   </div>
-                  <div className=" mt-4 flex items-center gap-4">
+
+                  {item.journalEntries.length > 0 && (
+                    <div className="mt-4 border-t pt-4">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                        Latest Journal
+                      </p>
+
+                      <p className="mt-2 font-medium">
+                        {item.journalEntries[0].title}
+                      </p>
+
+                      <p className="mt-2 text-sm text-gray-700">
+                        {item.journalEntries[0].content.slice(0, 100)}
+                        {item.journalEntries[0].content.length > 100 ? "..." : ""}
+                      </p>
+                  </div>
+                )}
+                  
+                  <div className="mt-4 flex items-center gap-4">
+                    <Link
+                      href ={`/trips/${trip.id}/itinerary/${item.id}/journal` }
+                      className="text-sm text-blue-600"
+                    >
+                      View Journals
+                    </Link>
+
                     <Link
                         href = {`/trips/${trip.id}/itinerary/${item.id}/journal/new`}
                         className="text-sm font-medium text-blue-600"
