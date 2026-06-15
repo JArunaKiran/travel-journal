@@ -206,7 +206,7 @@ export default async function TripDetailsPage({
                         {item.journalEntries[0].content.length > 100 ? "..." : ""}
                       </p>
                   </div>
-                )}
+                  )}
                   
                   <div className="mt-4 flex items-center gap-4">
                     <Link
@@ -284,6 +284,19 @@ export default async function TripDetailsPage({
                     {entry.content.slice(0, 100)}
                     {entry.content.length > 100 ? "..." : ""}
                   </div>
+                  <div className="mt-4 flex items-center gap-4">
+                    <Link
+                      href = {`/trips/${trip.id}/journal/${entry.id}`}
+                      className="text-sm text-blue-600"
+                    >
+                      View
+                    </Link>
+                    <Link
+                      href = {`/trips/${trip.id}/journal/${entry.id}/edit`}
+                      className="text-sm text-green-600"
+                    >
+                      Edit
+                    </Link>
                   <form
                     action={deleteJournalEntryAction.bind(
                       null,
@@ -293,11 +306,12 @@ export default async function TripDetailsPage({
                   >
                    <button
                      type="submit"
-                     className=" mt-3 text-sm text-red-600"
+                     className=" font-medium text-sm text-red-600"
                    >
                       Delete
                    </button>
                   </form>
+                  </div>
                 </div>
               ))}
             </div>
