@@ -4,6 +4,7 @@ import { getItineraryItemsByTrip } from "@/services/itineraryService";
 import { getTripJournalEntries, getLatestItineraryJournalEntry, } from "@/services/journalService";
 import { deleteJournalEntryAction,  deleteItineraryItemAction, deleteTripItineraryAction, deleteTripAction,createTravelerAction, deleteTravelerAction } from "./actions";
 import {getTravelersByTrip,} from "@/services/travelerService";
+import {getExpensesByTrip,} from "@/services/expenseService";
 
 type Props = {
   params: Promise<{
@@ -55,6 +56,9 @@ export default async function TripDetailsPage({
 
   const travelers =
     await getTravelersByTrip(id);
+  
+  const expenses = 
+    await getExpensesByTrip(id);
 
   return (
     <main className="max-w-5xl mx-auto px-6 py-8 bg-white text-black min-h-screen">
@@ -383,12 +387,66 @@ export default async function TripDetailsPage({
     </div>
 
         {/* Expenses Section */}
-        <div className="rounded-2xl border p-6 bg-white shadow-sm">
-          <h2 className="font-semibold">
-            Expenses
-          </h2>
+ {/* Expenses Section */}
+<div className="rounded-2xl border p-6 bg-white shadow-sm">
+  <div className="flex items-center justify-between mb-4">
+    <h2 className="font-semibold">
+      Expenses
+    </h2>
+
+    <Link
+      href={`/trips/${trip.id}/expenses/new`}
+      className="block rounded-lg bg-black text-white p-3 text-center"
+    >
+      Add Expense
+    </Link>
+  </div>
+
+  {expenses.length === 0 ? (
+    <p className="text-sm text-gray-500">
+      No expenses yet
+    </p>
+  ) : (
+    <div className="space-y-3">
+      {expenses.map((expense) => (
+        <div
+          key={expense.id}
+          className="border rounded-xl p-4"
+        >
+          <div className="flex justify-between">
+            <h3 className="font-medium">
+              {expense.title}
+            </h3>
+
+            <span className="font-semibold">
+              ₹{expense.amount}
+            </span>
+          </div>
+
+          <div className="mt-2 text-sm text-gray-600">
+            {expense.category}
+          </div>
+
+          <div className="mt-1 text-sm">
+            Paid by{" "}
+            <span className="font-medium">
+              {expense.paidBy.name}
+            </span>
+          </div>
+
+          <div className="mt-1 text-sm">
+            Split between{" "}
+            {expense.participants.length} traveler
+            {expense.participants.length !== 1
+              ? "s"
+              : ""}
+          </div>
         </div>
-      </div>
-    </main>
-  );
+      ))}
+    </div>
+  )}
+</div>
+</div>
+</main>
+);
 }

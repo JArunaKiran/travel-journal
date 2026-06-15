@@ -6,6 +6,15 @@ enum ActivityType {
   MEAL
 }
 
+enum ExpenseCategory {
+  ACCOMMODATION
+  FOOD
+  TRANSPORT
+  ACTIVITIES
+  SHOPPING
+  OTHER
+}
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -30,9 +39,11 @@ model Trip {
 
   itineraryItems ItineraryItem[]
 
-  journalEntries JournalEntry[] 
+  journalEntries JournalEntry[]
 
   travelers Traveler[]
+
+  expenses Expense[]
 }
 
 model ItineraryItem {
@@ -53,27 +64,28 @@ model ItineraryItem {
   trip Trip @relation(fields: [tripId], references: [id])
 
   journalEntries JournalEntry[]
-
 }
+
 model JournalEntry {
-  id              String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  title           String
+  title String
 
-  date            DateTime?
+  date DateTime?
 
-  content         String
+  content String
 
-  createdAt       DateTime @default(now())
+  createdAt DateTime @default(now())
 
-  tripId          String?
+  tripId String?
 
   itineraryItemId String?
 
-  trip            Trip? @relation(fields: [tripId], references: [id])
+  trip Trip? @relation(fields: [tripId], references: [id])
 
-  itineraryItem   ItineraryItem? @relation(fields: [itineraryItemId], references: [id])
+  itineraryItem ItineraryItem? @relation(fields: [itineraryItemId], references: [id])
 }
+
 model Traveler {
   id String @id @default(cuid())
 
@@ -82,4 +94,46 @@ model Traveler {
   tripId String
 
   trip Trip @relation(fields: [tripId], references: [id])
+
+  expensesPaid Expense[] @relation("ExpensePayer")
+
+  expenseParticipants ExpenseParticipant[]
+}
+
+model Expense {
+  id String @id @default(cuid())
+
+  title String
+
+  amount Float
+
+  category ExpenseCategory
+
+  date DateTime?
+
+  notes String?
+
+  tripId String
+
+  trip Trip @relation(fields: [tripId], references: [id])
+
+  paidById String
+
+  paidBy Traveler @relation("ExpensePayer", fields: [paidById], references: [id])
+
+  participants ExpenseParticipant[]
+
+  createdAt DateTime @default(now())
+}
+
+model ExpenseParticipant {
+  id String @id @default(cuid())
+
+  expenseId String
+
+  travelerId String
+
+  expense Expense @relation(fields: [expenseId], references: [id])
+
+  traveler Traveler @relation(fields: [travelerId], references: [id])
 }
