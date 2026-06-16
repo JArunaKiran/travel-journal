@@ -5,6 +5,7 @@ import { getTripJournalEntries, getLatestItineraryJournalEntry, } from "@/servic
 import { deleteJournalEntryAction,  deleteItineraryItemAction, deleteTripItineraryAction, deleteTripAction,createTravelerAction, deleteTravelerAction, deleteExpenseAction } from "./actions";
 import {getTravelersByTrip,} from "@/services/travelerService";
 import {getExpensesByTrip,} from "@/services/expenseService";
+import {calculateBalances, calculateSettlements,} from "@/lib/expenseSettlement";
 
 type Props = {
   params: Promise<{
@@ -64,6 +65,12 @@ export default async function TripDetailsPage({
     expenses.reduce(
       (sum,expense) => sum + expense.amount, 0
     );
+
+  const balances = 
+    calculateBalances( travelers, expenses);
+
+  const settlements =
+    calculateSettlements(balances);
 
   return (
     <main className="max-w-5xl mx-auto px-6 py-8 bg-white text-black min-h-screen">
@@ -474,6 +481,78 @@ export default async function TripDetailsPage({
         </div>   
         </div>
       ))}
+    </div>
+  )}
+</div>
+<div className="rounded-2xl border p-6 bg-white shadow-sm">
+  <h2 className="font-semibold mb-4">
+    Balances
+  </h2>
+  {balances.length === 0 ? (
+    <p className="text-sm text-gray-500">
+      No travelers yet
+    </p>
+  ):(
+    <div className="space-y-2">
+      {balances.map((balance) => (
+        <div
+          key = {balance.travelerId}
+          className="flex justify-between items-center"
+        >
+          <span>
+            {balance.travelerName}
+          </span>
+
+          <span
+            className= {
+              balance.balance >=0
+              ? "font-medium text-green-600"
+              : "font-medium text-red-600"
+            }
+          >
+            ₹
+            {balance.balance.toFixed(2)}
+          </span>
+        </div>
+      ))}
+    </div>
+    )}
+  </div>
+  <div className="rounded-2xl border p-6 bg-white shadow-sm">
+  <h2 className="font-semibold mb-4">
+    Settlement Summary
+  </h2>
+
+  {settlements.length === 0 ? (
+    <p className="text-sm text-gray-500">
+      No settlements required
+    </p>
+  ) : (
+    <div className="space-y-2">
+      {settlements.map(
+        (settlement, index) => (
+          <div
+            key={index}
+            className="border rounded-lg p-3"
+          >
+            <span className="font-medium">
+              {settlement.from}
+            </span>
+
+            {" owes "}
+
+            <span className="font-medium">
+              {settlement.to}
+            </span>
+
+            {" ₹"}
+
+            {settlement.amount.toFixed(
+              2
+            )}
+          </div>
+        )
+      )}
     </div>
   )}
 </div>
