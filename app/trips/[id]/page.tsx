@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getTripById } from "@/services/tripService";
 import { getItineraryItemsByTrip } from "@/services/itineraryService";
 import { getTripJournalEntries, getLatestItineraryJournalEntry, } from "@/services/journalService";
-import { deleteJournalEntryAction,  deleteItineraryItemAction, deleteTripItineraryAction, deleteTripAction,createTravelerAction, deleteTravelerAction } from "./actions";
+import { deleteJournalEntryAction,  deleteItineraryItemAction, deleteTripItineraryAction, deleteTripAction,createTravelerAction, deleteTravelerAction, deleteExpenseAction } from "./actions";
 import {getTravelersByTrip,} from "@/services/travelerService";
 import {getExpensesByTrip,} from "@/services/expenseService";
 
@@ -59,6 +59,11 @@ export default async function TripDetailsPage({
   
   const expenses = 
     await getExpensesByTrip(id);
+
+  const totalExpenses =
+    expenses.reduce(
+      (sum,expense) => sum + expense.amount, 0
+    );
 
   return (
     <main className="max-w-5xl mx-auto px-6 py-8 bg-white text-black min-h-screen">
@@ -393,7 +398,14 @@ export default async function TripDetailsPage({
     <h2 className="font-semibold">
       Expenses
     </h2>
-
+    <div className="mt-3 mb-4">
+      <p className="text-sm text-gray-500">
+        Total Expenses
+      </p>
+      <p className="text-2xl font-bold">
+        ₹{totalExpenses.toFixed(2)}
+      </p>
+    </div>
     <Link
       href={`/trips/${trip.id}/expenses/new`}
       className="block rounded-lg bg-black text-white p-3 text-center"
@@ -441,6 +453,25 @@ export default async function TripDetailsPage({
               ? "s"
               : ""}
           </div>
+          <div className="mt-3 flex items-center gap-4">
+            <Link
+              href = {`/trips/${trip.id}/expenses/${expense.id}/edit`}
+              className="text-sm font-medium text-blue-600"
+            >
+              Edit
+            </Link>
+          <form
+            action = {deleteExpenseAction.bind(null, trip.id, expense.id
+            )}
+          >
+          <button
+            type = "submit"
+            className="font-medium text-sm text-red-600"
+          >
+          Delete  
+          </button> 
+        </form>
+        </div>   
         </div>
       ))}
     </div>

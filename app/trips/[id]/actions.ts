@@ -6,6 +6,7 @@ import { deleteItineraryItem,deleteTripItinerary,} from "@/services/itinerarySer
 import { deleteTrip, } from "@/services/tripService";
 import { redirect } from "next/navigation";
 import {createTraveler, deleteTraveler,} from "@/services/travelerService";
+import {deleteExpense,} from "@/services/expenseService";
 
 
 export async function deleteJournalEntryAction(
@@ -71,3 +72,15 @@ export async function deleteTravelerAction(
     `/trips/${tripId}`
   );
 } 
+export async function deleteExpenseAction(
+  tripId: string,
+  expenseId: string
+) {
+  await deleteExpense(
+    expenseId
+  );
+
+  revalidatePath(
+    `/trips/${tripId}`
+  );
+}
