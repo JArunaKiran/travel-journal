@@ -88,7 +88,7 @@ const previewGroupedItinerary =
   const expenses = 
     await getExpensesByTrip(id);
   
-    console.log(expenses);
+    {/*console.log(expenses); */}
 
   const totalExpenses =
     expenses.reduce(

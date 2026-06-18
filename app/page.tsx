@@ -1,8 +1,18 @@
 import { getTrips } from "@/services/tripService";
 import Link from "next/link";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 
 export default async function HomePage() {
+  const session = 
+    await getServerSession(authOptions);
+
+  if(!session){
+    redirect("/login")
+  }
+
   const trips = await getTrips();
 
   return (
@@ -10,6 +20,14 @@ export default async function HomePage() {
       <h1 className="text-3xl font-bold">
         Travel Journal
       </h1>
+
+      <p className="mt-2 text-sm text-gray-500">
+        Session exists: {session? "Yes": "No"}
+      </p>
+
+      <p className="mt-2 text-sm text-gray-500">
+        Email: {session?.user?.email ?? "NONE"}
+      </p>
 
       <Link
         href="/trips/new"
