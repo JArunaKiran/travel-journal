@@ -1,7 +1,17 @@
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "./userService";
 
 export async function getTrips() {
+  const user = 
+    await getCurrentUser();
+  
+  if(!user){
+    return [];
+  }
   return prisma.trip.findMany({
+    where: {
+      userId: user.id,
+    },
     orderBy: {
       createdAt: "desc",
     },
@@ -11,18 +21,36 @@ export async function createTrip(data: {
   title: string;
   country?: string;
   startDate?: Date;
-  endDate?: Date;
+  endDate?: Date; 
 }) {
+  const user =
+    await getCurrentUser();
+
+    if(!user)
+      {throw new Error("User not authenticated");}
+
   return prisma.trip.create({
-    data,
+    data: {
+      ...data,
+      userId: user.id,
+    },
+    
   });
 }
 export async function getTripById(
   id: string
 ) {
-  return prisma.trip.findUnique({
+  const user = 
+    await getCurrentUser();
+  
+  if(!user){
+    return null;
+  }
+
+  return prisma.trip.findFirst({
     where: {
       id,
+      userId: user.id,
     },
   });
 }
