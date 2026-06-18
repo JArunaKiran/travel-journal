@@ -33,6 +33,9 @@ export default async function TripDetailsPage({
   const itineraryItems =
     await getItineraryItemsByTrip(id);
 
+  const previewItineraryItems = 
+    itineraryItems.slice(0,5);
+
   const groupedItinerary = itineraryItems.reduce(
   (groups, item) => {
     if (!item.date) return groups;
@@ -52,6 +55,30 @@ export default async function TripDetailsPage({
   {} as Record<string, typeof itineraryItems>
 );
 
+const previewGroupedItinerary =
+  previewItineraryItems.reduce(
+    (groups, item) => {
+      if (!item.date) return groups;
+
+      const dateKey =
+        item.date
+          .toISOString()
+          .split("T")[0];
+
+      if (!groups[dateKey]) {
+        groups[dateKey] = [];
+      }
+
+      groups[dateKey].push(item);
+
+      return groups;
+    },
+    {} as Record<
+      string,
+      typeof previewItineraryItems
+    >
+  );
+
   const journalEntries =
     await getTripJournalEntries(id);
 
@@ -60,10 +87,24 @@ export default async function TripDetailsPage({
   
   const expenses = 
     await getExpensesByTrip(id);
+  
+    console.log(expenses);
 
   const totalExpenses =
     expenses.reduce(
       (sum,expense) => sum + expense.amount, 0
+    );
+
+  const categoryTotals = 
+    expenses.reduce(
+      (totals, expense) => {
+        totals[expense.category] =
+        (totals[expense.category] ?? 0) +
+        expense.amount;
+
+      return totals;
+      },
+      {} as Record<string, number>
     );
 
   const balances = 
@@ -164,7 +205,7 @@ export default async function TripDetailsPage({
             </p>
           ) : (
             <div className="space-y-6">
-            {Object.entries(groupedItinerary)
+            {Object.entries(previewGroupedItinerary)
               .sort(([a], [b]) => a.localeCompare(b))
               .map(([dateKey, items]) => {
              const currentDate = new Date(dateKey);
@@ -264,6 +305,16 @@ export default async function TripDetailsPage({
           </div>
         );
       })}
+  </div>
+)}
+{itineraryItems.length > 5 && (
+  <div className="mt-4">
+    <Link
+      href={`/trips/${trip.id}/itinerary`}
+      className="text-sm text-blue-600"
+    >
+      View Full Itinerary →
+    </Link>
   </div>
 )}
         </div>
@@ -405,14 +456,14 @@ export default async function TripDetailsPage({
     <h2 className="font-semibold">
       Expenses
     </h2>
-    <div className="mt-3 mb-4">
+    {/*<div className="mt-3 mb-4">
       <p className="text-sm text-gray-500">
         Total Expenses
       </p>
       <p className="text-2xl font-bold">
         ₹{totalExpenses.toFixed(2)}
       </p>
-    </div>
+    </div> */}
     <Link
       href={`/trips/${trip.id}/expenses/new`}
       className="block rounded-lg bg-black text-white p-3 text-center"
@@ -484,6 +535,49 @@ export default async function TripDetailsPage({
     </div>
   )}
 </div>
+
+<div className="rounded-2xl border p-6 bg-white shadow-sm">
+  <h2 className="font-semibold mb-4">
+    Expense Summary
+  </h2>
+
+  <div className="mb-4">
+    <p className="text-sm text-gray-500">
+      Total Expenses
+    </p>
+
+    <p className="text-2xl font-bold">
+      ₹{totalExpenses.toFixed(2)}
+    </p>
+  </div>
+
+  <div className="space-y-2">
+    {Object.entries(categoryTotals).map(
+      ([category, amount]) => (
+        <div
+          key={category}
+          className="flex justify-between"
+        >
+          <span>
+            {category
+              .toLowerCase()
+              .replace("_", " ")
+              .replace(
+                /^\w/,
+                (c) => c.toUpperCase()
+              )}
+          </span>
+
+          <span className="font-medium">
+            ₹
+            {amount.toFixed(2)}
+          </span>
+        </div>
+      )
+    )}
+  </div>
+</div>
+
 <div className="rounded-2xl border p-6 bg-white shadow-sm">
   <h2 className="font-semibold mb-4">
     Balances
