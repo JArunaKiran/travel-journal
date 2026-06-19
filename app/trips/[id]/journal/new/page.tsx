@@ -1,3 +1,4 @@
+import JournalForm from "@/components/journal/JournalForm";
 import { createTripJournalEntryAction } from "./actions";
 
 type Props = {
@@ -23,45 +24,9 @@ export default async function NewJournalPage({
         Add Journal Entry
       </h1>
 
-      <form
+      <JournalForm
         action={createAction}
-        className="space-y-4"
-      >
-        <input
-          name="title"
-          type="text"
-          placeholder="Title"
-          className="w-full border rounded-lg p-3"
-          required
-        />
-
-        <input
-          name="date"
-          type="date"
-          className="w-full border rounded-lg p-3"
-        />
-
-        <textarea
-          name="content"
-          placeholder="Write your journal..."
-          rows={8}
-          className="w-full border rounded-lg p-3"
-          required
-        />
-
-        <button
-          type="submit"
-          className="
-            w-full
-            rounded-lg
-            bg-black
-            text-white
-            p-3
-          "
-        >
-          Save Journal
-        </button>
-      </form>
+      />
     </main>
   );
 }

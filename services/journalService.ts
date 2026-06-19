@@ -7,6 +7,9 @@ export async function getTripJournalEntries(
     where: {
       tripId,
     },
+    include: {
+      photos: true,
+    },
     orderBy: {
       createdAt: "desc",
     },
@@ -19,10 +22,27 @@ export async function createTripJournalEntry(
     title: string;
     content: string;
     date?: Date;
+    photos?: {
+      imageUrl: string;
+      cloudinaryPublicId?: string;
+    }[];
   }
 ) {
+  const {
+    photos = [],
+    ...journalData
+  }= data;
+
   return prisma.journalEntry.create({
-    data,
+    data: {
+      ...journalData,
+      photos: {
+        create: photos,
+      },
+    },
+    include: {
+      photos: true,
+    },
   });
 }
 export async function deleteJournalEntry(
@@ -53,6 +73,9 @@ export async function getItineraryJournalEntries(
     where: {
       itineraryItemId,
     },
+    include: {
+      photos: true,
+    },
     orderBy: {
       createdAt: "desc",
     },
@@ -65,6 +88,9 @@ export async function getLatestItineraryJournalEntry(
     where: {
       itineraryItemId,
     },
+    include: {
+      photos: true,
+    },
     orderBy: {
       createdAt: "desc",
     },
@@ -76,6 +102,9 @@ export async function getJournalEntryById(
   return prisma.journalEntry.findUnique({
     where: {
       id,
+    },
+    include: {
+      photos: true,
     },
   });
 }

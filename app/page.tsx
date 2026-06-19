@@ -24,22 +24,24 @@ export default async function HomePage() {
   const trips = await getTrips();
 
   return (
-    <main className="max-w-6xl mx-auto px-6 py-8 bg-white text-black min-h-screen">
-      <div className="w-full flex items-start justify-between mb-6">
-        <div>
+    <main className="max-w- mx-auto px-6 py-8 bg-white text-black min-h-screen">
+      <div className="mb-6">
+        
       <h1 className="text-3xl font-bold">
         Travel Journal
       </h1>
 
-      <p className="mt-2 text-sm text-gray-500">
+      <p className="mt-3 text-sm text-gray-500">
         Signed in as: {session?.user?.name ?? "NONE"}
       </p>
 
       <p className="mt-2 text-sm text-gray-500">
         Email: {session?.user?.email ?? "NONE"}
       </p>
-      </div>
+
+      <div className="mt-3">
       <SignOutButton />
+      </div>
       </div>
 
       <Link

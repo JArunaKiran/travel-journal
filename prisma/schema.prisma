@@ -88,6 +88,8 @@ model JournalEntry {
   trip Trip? @relation(fields: [tripId], references: [id])
 
   itineraryItem ItineraryItem? @relation(fields: [itineraryItemId], references: [id])
+
+  photos JournalPhoto[]
 }
 
 model Traveler {
@@ -152,4 +154,18 @@ model User {
   image String?
 
   trips Trip[]
+}
+  
+model JournalPhoto {
+  id String @id @default(cuid())
+
+  imageUrl String
+
+  cloudinaryPublicId String?
+
+  createdAt DateTime @default(now())
+
+  journalEntryId String
+
+  journalEntry JournalEntry @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
 }

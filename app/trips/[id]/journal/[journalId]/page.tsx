@@ -59,6 +59,28 @@ export default async function TripJournalPage({
         <div className="mt-6 whitespace-pre-wrap leading-relaxed">
           {journal.content}
         </div>
+
+
+{journal.photos.length > 0 && (
+  <div className="mt-6">
+    <div className="grid grid-cols-2 gap-3">
+      {journal.photos.map(
+        (photo) => (
+          <img
+            key={photo.id}
+            src={photo.imageUrl}
+            alt="Journal photo"
+            className="
+              w-full
+              rounded-lg
+              object-cover
+            "
+          />
+        )
+      )}
+    </div>
+  </div>
+)}
       </div>
     </main>
   );
