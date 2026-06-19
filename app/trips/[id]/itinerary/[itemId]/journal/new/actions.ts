@@ -17,14 +17,28 @@ export async function createItineraryJournalEntryAction(
   const dateValue =
     formData.get("date") as string;
 
-  await createItineraryJournalEntry({
-    itineraryItemId,
-    title,
-    content,
-    date: dateValue
-      ? new Date(dateValue)
-      : undefined,
-  });
+  const photoUrls =
+  formData.getAll("photoUrl");
 
-  redirect(`/trips/${tripId}`);
+const photoPublicIds =
+  formData.getAll("photoPublicId");
+
+const photos = photoUrls.map(
+  (url, index) => ({
+    imageUrl: url as string,
+    cloudinaryPublicId:
+      photoPublicIds[index] as string,
+  })
+);
+
+await createItineraryJournalEntry({
+  itineraryItemId,
+  title,
+  content,
+  date: dateValue
+    ? new Date(dateValue)
+    : undefined,
+  photos,
+});
+redirect(`/trips/${tripId}`);
 }

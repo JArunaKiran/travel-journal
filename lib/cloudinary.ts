@@ -7,3 +7,11 @@ cloudinary.config({
 });
 
 export default cloudinary;
+
+export async function deleteCloudinaryImage(
+  publicId: string
+) {
+  return cloudinary.uploader.destroy(
+    publicId
+  );
+}

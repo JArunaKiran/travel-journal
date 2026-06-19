@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import {deleteItineraryJournalPhotoAction,} from "./photo-actions";
 
 import {
   getJournalEntryById,
@@ -94,6 +95,52 @@ export default async function EditJournalPage({
           Save Changes
         </button>
       </form>
+      {journal.photos.length > 0 && (
+  <div className="mt-8 space-y-4">
+    <h2 className="text-lg font-semibold">
+      Photos
+    </h2>
+
+    <div className="grid grid-cols-2 gap-4">
+      {journal.photos.map(
+        (photo) => (
+          <div
+            key={photo.id}
+            className="border rounded-lg p-2"
+          >
+            <img
+              src={photo.imageUrl}
+              alt="Journal photo"
+              className="
+                w-full
+                rounded-lg
+                object-cover
+              "
+            />
+
+            <form
+              action={deleteItineraryJournalPhotoAction.bind(
+                null,
+                id,
+                itemId,
+                journalId,
+                photo.id
+              )}
+              className="mt-2"
+            >
+              <button
+                type="submit"
+                className="text-sm text-red-600"
+              >
+                Delete Photo
+              </button>
+            </form>
+          </div>
+        )
+      )}
+    </div>
+  </div>
+)}
     </main>
   );
 }

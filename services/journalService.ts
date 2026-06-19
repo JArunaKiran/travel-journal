@@ -1,3 +1,4 @@
+import { deleteCloudinaryImage } from "@/lib/cloudinary";
 import { prisma } from "@/lib/prisma";
 
 export async function getTripJournalEntries(
@@ -48,6 +49,27 @@ export async function createTripJournalEntry(
 export async function deleteJournalEntry(
   id: string
 ) {
+  const journal = 
+    await prisma.journalEntry.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        photos: true,
+      },
+    });
+    if(!journal){
+      return;
+    }
+    for(const photo of journal.photos){
+      if(
+        photo.cloudinaryPublicId
+      ) {
+        await deleteCloudinaryImage(
+          photo.cloudinaryPublicId
+        );
+      }
+    }
   return prisma.journalEntry.delete({
     where: {
       id,
@@ -60,10 +82,26 @@ export async function createItineraryJournalEntry(
     title: string;
     content: string;
     date?: Date;
+    photos?: {
+      imageUrl: string;
+      cloudinaryPublicId?: string;
+    }[];
   }
 ) {
+  const {
+    photos = [],
+    ...journalData
+  } = data;
   return prisma.journalEntry.create({
-    data,
+    data: {
+      ...journalData,
+      photos: {
+        create: photos,
+      },
+    },
+    include: {
+      photos: true,
+    },
   });
 }
 export async function getItineraryJournalEntries(
@@ -121,5 +159,43 @@ export async function updateJournalEntry(
       id,
     },
     data,
+  });
+}
+export async function getJournalEntryWithPhotos(
+  id: string
+) {
+  return prisma.journalEntry.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      photos: true,
+    },
+  });
+}
+export async function deleteJournalPhoto(
+  photoId: string
+) {
+  const photo =
+    await prisma.journalPhoto.findUnique({
+      where: {
+        id: photoId,
+      },
+    });
+
+  if (!photo) {
+    return;
+  }
+
+  if (photo.cloudinaryPublicId) {
+    await deleteCloudinaryImage(
+      photo.cloudinaryPublicId
+    );
+  }
+
+  return prisma.journalPhoto.delete({
+    where: {
+      id: photoId,
+    },
   });
 }

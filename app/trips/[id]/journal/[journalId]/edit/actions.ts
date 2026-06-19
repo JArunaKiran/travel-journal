@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import {deleteJournalPhotoAction,} from "./photo-actions";
 
 import {
   updateJournalEntry,

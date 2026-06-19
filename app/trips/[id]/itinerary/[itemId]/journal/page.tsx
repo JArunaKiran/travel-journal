@@ -103,6 +103,22 @@ export default async function ActivityJournalPage({
                     ? "..."
                     : ""}
                 </div>
+                {entry.photos.length > 0 && (
+  <div className="mt-4 grid grid-cols-2 gap-2">
+    {entry.photos.map((photo) => (
+      <img
+        key={photo.id}
+        src={photo.imageUrl}
+        alt="Journal photo"
+        className="
+          w-full
+          rounded-lg
+          object-cover
+        "
+      />
+    ))}
+  </div>
+)}
                 <div className="mt-4">
                     <Link
                         href={`/trips/${id}/itinerary/${itemId}/journal/${entry.id}/edit`}
