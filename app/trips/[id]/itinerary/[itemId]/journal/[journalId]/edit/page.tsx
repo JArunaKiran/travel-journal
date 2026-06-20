@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import {deleteItineraryJournalPhotoAction,} from "./photo-actions";
+import EditJournalForm from "@/components/journal/EditJournalForm";
 
 import {
   getJournalEntryById,
@@ -48,53 +49,18 @@ export default async function EditJournalPage({
       <h1 className="text-2xl font-bold mb-6">
         Edit Journal Entry
       </h1>
-
-      <form
-        action={updateAction}
-        className="space-y-4"
-      >
-        <input
-          name="title"
-          type="text"
-          defaultValue={journal.title}
-          className="w-full border rounded-lg p-3"
-          required
-        />
-
-        <input
-          name="date"
-          type="date"
-          defaultValue={
-            journal.date
-              ? journal.date
-                  .toISOString()
-                  .split("T")[0]
-              : ""
-          }
-          className="w-full border rounded-lg p-3"
-        />
-
-        <textarea
-          name="content"
-          rows={10}
-          defaultValue={journal.content}
-          className="w-full border rounded-lg p-3"
-          required
-        />
-
-        <button
-          type="submit"
-          className="
-            w-full
-            rounded-lg
-            bg-black
-            text-white
-            p-3
-          "
-        >
-          Save Changes
-        </button>
-      </form>
+      <EditJournalForm
+  action={updateAction}
+  title={journal.title}
+  content={journal.content}
+  date={
+    journal.date
+      ? journal.date
+          .toISOString()
+          .split("T")[0]
+      : ""
+  }
+/>
       {journal.photos.length > 0 && (
   <div className="mt-8 space-y-4">
     <h2 className="text-lg font-semibold">

@@ -21,6 +21,23 @@ export async function updateJournalEntryAction(
   const dateValue =
     formData.get("date") as string;
 
+  const photoUrls =
+    formData.getAll("photoUrl");
+
+  const photoPublicIds =
+    formData.getAll("photoPublicId");
+
+  const photos = photoUrls.map(
+    (url, index) => ({
+      imageUrl: url as string,
+      cloudinaryPublicId:
+        photoPublicIds[index] as string,
+    })
+  );
+
+  console.log("PHOTO URLS", photoUrls);
+console.log("PHOTO IDS", photoPublicIds);
+console.log("PHOTOS", photos);
   await updateJournalEntry(
     journalId,
     {
@@ -29,6 +46,7 @@ export async function updateJournalEntryAction(
       date: dateValue
         ? new Date(dateValue)
         : undefined,
+      photos,
     }
   );
 

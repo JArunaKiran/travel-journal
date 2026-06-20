@@ -152,13 +152,30 @@ export async function updateJournalEntry(
     title: string;
     content: string;
     date?: Date;
+    photos?: {
+      imageUrl: string;
+      cloudinaryPublicId?: string;
+    }[];
   }
 ) {
+  const {
+    photos = [],
+    ...journalData
+  } = data;
+
   return prisma.journalEntry.update({
     where: {
       id,
     },
-    data,
+    data: {
+      ...journalData,
+      photos: {
+        create: photos,
+      },
+    },
+    include: {
+      photos: true,
+    },
   });
 }
 export async function getJournalEntryWithPhotos(

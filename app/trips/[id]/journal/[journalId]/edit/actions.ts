@@ -1,7 +1,6 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import {deleteJournalPhotoAction,} from "./photo-actions";
 
 import {
   updateJournalEntry,
@@ -21,6 +20,20 @@ export async function updateTripJournalEntryAction(
   const dateValue =
     formData.get("date") as string;
 
+  const photoUrls =
+    formData.getAll("photoUrl");
+
+  const photoPublicIds =
+    formData.getAll("photoPublicId");
+
+  const photos = photoUrls.map(
+    (url, index) => ({
+      imageUrl: url as string,
+      cloudinaryPublicId:
+        photoPublicIds[index] as string,
+    })
+  );
+
   await updateJournalEntry(
     journalId,
     {
@@ -29,6 +42,7 @@ export async function updateTripJournalEntryAction(
       date: dateValue
         ? new Date(dateValue)
         : undefined,
+      photos,
     }
   );
 
