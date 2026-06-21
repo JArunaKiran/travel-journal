@@ -12,7 +12,7 @@ export default async function HomePage() {
   const user = 
     await getCurrentUser();
 
-  console.log(user);
+  /*console.log(user); */
 
   const session = 
     await getServerSession(authOptions);
@@ -42,6 +42,16 @@ export default async function HomePage() {
       <div className="mt-3">
       <SignOutButton />
       </div>
+      <br></br>
+      <div>
+      <Link
+        href = "/how-to-use"
+        className="text-sm font-medium text-blue-600 hover:underline"
+      >
+        How to use
+      </Link>
+      </div>
+      
       </div>
 
       <Link
