@@ -63,7 +63,9 @@ model ItineraryItem {
 
   notes String?
 
-  tripId String
+  completed Boolean @default(false)
+
+  tripId String 
 
   trip Trip @relation(fields: [tripId], references: [id])
 

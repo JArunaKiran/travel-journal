@@ -15,6 +15,11 @@ export async function getItineraryItemsByTrip(
         },
         take: 1,
       },
+      _count: {
+        select: {
+          journalEntries: true,
+        },
+      },
     },
 
     orderBy: [
@@ -69,6 +74,56 @@ export async function getItineraryItemById(
   return prisma.itineraryItem.findUnique({
     where: {
       id,
+    },
+  });
+}
+export async function updateItineraryItem(
+  id: string,
+  data: {
+    activity:
+      | "TRAVEL"
+      | "CHECK_IN"
+      | "CHECK_OUT"
+      | "EXPLORE"
+      | "MEAL";
+    place: string;
+    date?: Date;
+    time?: string;
+    notes?: string;
+  }
+) {
+  return prisma.itineraryItem.update({
+    where: {
+      id,
+    },
+    data,
+  });
+}
+export async function toggleItineraryItemCompletion(
+  id: string
+) {
+  const item =
+    await prisma.itineraryItem.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        completed: true,
+      },
+    });
+
+  if (!item) {
+    throw new Error(
+      "Itinerary item not found"
+    );
+  }
+
+  return prisma.itineraryItem.update({
+    where: {
+      id,
+    },
+    data: {
+      completed: !item.completed,
     },
   });
 }

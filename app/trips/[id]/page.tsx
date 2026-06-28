@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { getTripById } from "@/services/tripService";
-import { getItineraryItemsByTrip } from "@/services/itineraryService";
+import { getItineraryItemsByTrip, updateItineraryItem } from "@/services/itineraryService";
 import { getTripJournalEntries, getLatestItineraryJournalEntry, } from "@/services/journalService";
 import { deleteJournalEntryAction,  deleteItineraryItemAction, deleteTripItineraryAction, deleteTripAction,createTravelerAction, deleteTravelerAction, deleteExpenseAction } from "./actions";
 import {getTravelersByTrip,} from "@/services/travelerService";
 import {getExpensesByTrip,} from "@/services/expenseService";
 import {calculateBalances, calculateSettlements,} from "@/lib/expenseSettlement";
+import { toggleItineraryItemCompletionAction,} from "./itinerary/actions";
 
 type Props = {
   params: Promise<{
@@ -173,7 +174,7 @@ const previewGroupedItinerary =
         href={`/trips/${trip.id}/itinerary/new`}
         className=" block w-full rounded-2xl bg-black text-white py-4 text-center mt-6 font-medium"
       >
-        Add Activity
+        Add Itinerary Item
       </Link>
 
       <div className="mt-8 space-y-6">
@@ -231,14 +232,42 @@ const previewGroupedItinerary =
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className="border rounded-xl p-5 bg-white shadow-sm hover:shadow-md transition"
+                  className={
+  item.completed
+    ? "border border-black-200 bg-green-50 rounded-xl p-5 shadow-sm transition"
+    : "border rounded-xl p-5 bg-white shadow-sm hover:shadow-md transition"
+}
                 >
-                  <div className="text-lg font-semibold">
-                    {item.activity.replaceAll(
-                      "_",
-                      " "
-                    )}
-                  </div>
+                 <div className="flex items-center gap-3">
+  <form
+    action={toggleItineraryItemCompletionAction.bind(
+      null,
+      trip.id,
+      item.id
+    )}
+  >
+    <button
+      type="submit"
+      className="text-xl"
+      title="Toggle completion"
+    >
+      {item.completed ? "☑" : "☐"}
+    </button>
+  </form>
+
+  <div
+    className={
+      item.completed
+        ? "text-lg font-semibold text-green-800"
+        : "text-lg font-semibold"
+    }
+  >
+    {item.activity.replaceAll(
+      "_",
+      " "
+    )}
+  </div>
+</div>
 
                   <div className="text-sm mt-2">
                     📍 {item.place}
@@ -274,7 +303,13 @@ const previewGroupedItinerary =
                       href ={`/trips/${trip.id}/itinerary/${item.id}/journal` }
                       className="text-sm text-blue-600"
                     >
-                      View Journals
+                      View Journals ({item._count.journalEntries})
+                    </Link>
+                    <Link
+                      href = {`/trips/${trip.id}/itinerary/${item.id}/edit`}
+                      className="text-sm text-green-600"
+                    >
+                      Edit Item
                     </Link>
 
                     <Link
@@ -322,7 +357,7 @@ const previewGroupedItinerary =
         {/* Journal Section */}
         <div className="rounded-2xl border p-6 bg-white shadow-sm">
           <h2 className="font-semibold mb-3">
-            Journal
+            Trip Journal
           </h2>
           <Link
             href={`/trips/${trip.id}/journal/new`}

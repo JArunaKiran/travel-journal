@@ -1,7 +1,8 @@
 import Link from "next/link";
 import {getTripById,} from "@/services/tripService";
-import {getItineraryItemsByTrip,} from "@/services/itineraryService";
+import {getItineraryItemsByTrip, updateItineraryItem} from "@/services/itineraryService";
 import { deleteItineraryItemAction } from "../actions";
+import {toggleItineraryItemCompletionAction,} from "./actions";
 
 type Props = {
   params: Promise<{
@@ -106,14 +107,41 @@ export default async function FullItineraryPage({
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className="border rounded-xl p-5 bg-white shadow-sm hover:shadow-md transition"
+                  className={ item.completed
+    ? "border border-black-200 bg-green-50 rounded-xl p-5 shadow-sm transition"
+    : "border rounded-xl p-5 bg-white shadow-sm hover:shadow-md transition"
+}
                 >
-                  <div className="text-lg font-semibold">
-                    {item.activity.replaceAll(
-                      "_",
-                      " "
-                    )}
-                  </div>
+                 <div className="flex items-center gap-3">
+  <form
+    action={toggleItineraryItemCompletionAction.bind(
+      null,
+      trip.id,
+      item.id
+    )}
+  >
+    <button
+      type="submit"
+      className="text-xl"
+      title="Toggle completion"
+    >
+      {item.completed ? "☑" : "☐"}
+    </button>
+  </form>
+
+  <div
+    className={
+      item.completed
+        ? "text-lg font-semibold text-green-800"
+        : "text-lg font-semibold"
+    }
+  >
+    {item.activity.replaceAll(
+      "_",
+      " "
+    )}
+  </div>
+</div>
 
                   <div className="text-sm mt-2">
                     📍 {item.place}
@@ -155,7 +183,13 @@ export default async function FullItineraryPage({
                       href={`/trips/${trip.id}/itinerary/${item.id}/journal`}
                       className="text-sm text-blue-600"
                     >
-                      View Journals
+                      View Journals ({item._count.journalEntries})
+                    </Link>
+                    <Link 
+                      href = {`/trips/${trip.id}/itinerary/${item.id}/edit`}
+                      className="text-sm text-green-600"
+                    >
+                      Edit Item
                     </Link>
 
                     <Link
